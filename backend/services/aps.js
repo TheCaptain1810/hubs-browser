@@ -1,21 +1,17 @@
-const {
-  AuthenticationClient,
-  ResponseType,
-} = require("@aps_sdk/authentication");
-const { DataManagementClient } = require("@aps_sdk/data-management");
-const {
+import { AuthenticationClient, ResponseType } from "@aps_sdk/authentication";
+import { DataManagementClient } from "@aps_sdk/data-management";
+import {
   APS_CLIENT_ID,
   APS_CLIENT_SECRET,
   APS_CALLBACK_URL,
   INTERNAL_TOKEN_SCOPES,
   PUBLIC_TOKEN_SCOPES,
-} = require("../config.js");
+} from "../config.js";
 
 const authenticationClient = new AuthenticationClient();
 const dataManagementClient = new DataManagementClient();
-const service = (module.exports = {});
 
-service.getAuthorizationUrl = () =>
+const getAuthorizationUrl = () =>
   authenticationClient.authorize(
     APS_CLIENT_ID,
     ResponseType.Code,
@@ -23,7 +19,7 @@ service.getAuthorizationUrl = () =>
     INTERNAL_TOKEN_SCOPES
   );
 
-service.authCallbackMiddleware = async (req, res, next) => {
+const authCallbackMiddleware = async (req, res, next) => {
   const internalCredentials = await authenticationClient.getThreeLeggedToken(
     APS_CLIENT_ID,
     req.query.code,
@@ -47,7 +43,7 @@ service.authCallbackMiddleware = async (req, res, next) => {
   next();
 };
 
-service.authRefreshMiddleware = async (req, res, next) => {
+const authRefreshMiddleware = async (req, res, next) => {
   const { refresh_token, expires_at } = req.session;
   if (!refresh_token) {
     res.status(401).end();
@@ -87,29 +83,24 @@ service.authRefreshMiddleware = async (req, res, next) => {
   next();
 };
 
-service.getUserProfile = async (accessToken) => {
+const getUserProfile = async (accessToken) => {
   const resp = await authenticationClient.getUserInfo(accessToken);
   return resp;
 };
 
-service.getHubs = async (accessToken) => {
+const getHubs = async (accessToken) => {
   const resp = await dataManagementClient.getHubs({ accessToken });
   return resp.data;
 };
 
-service.getProjects = async (hubId, accessToken) => {
+const getProjects = async (hubId, accessToken) => {
   const resp = await dataManagementClient.getHubProjects(hubId, {
     accessToken,
   });
   return resp.data;
 };
 
-service.getProjectContents = async (
-  hubId,
-  projectId,
-  folderId,
-  accessToken
-) => {
+const getProjectContents = async (hubId, projectId, folderId, accessToken) => {
   if (!folderId) {
     const resp = await dataManagementClient.getProjectTopFolders(
       hubId,
@@ -127,9 +118,20 @@ service.getProjectContents = async (
   }
 };
 
-service.getItemVersions = async (projectId, itemId, accessToken) => {
+const getItemVersions = async (projectId, itemId, accessToken) => {
   const resp = await dataManagementClient.getItemVersions(projectId, itemId, {
     accessToken,
   });
   return resp.data;
+};
+
+export {
+  getAuthorizationUrl,
+  authCallbackMiddleware,
+  authRefreshMiddleware,
+  getUserProfile,
+  getHubs,
+  getProjects,
+  getProjectContents,
+  getItemVersions,
 };

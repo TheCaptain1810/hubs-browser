@@ -1,24 +1,14 @@
 {
   "name": "hubs-browser",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
+  "description": "A web application for browsing Autodesk Hubs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "dev:full": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "@aps_sdk/authentication": "^1.0.0",
-    "@aps_sdk/data-management": "^1.1.2",
-    "cookie-session": "^2.1.0",
-    "dotenv": "^17.2.0",
-    "express": "^5.1.0"
-  },
-  "devDependencies": {
-    "@types/forge-viewer": "^7.99.1"
+    "concurrently": "^9.2.0"
   }
 }

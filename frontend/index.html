@@ -20,25 +20,9 @@
 
     <title>Autodesk Platform Services: Hubs Browser</title>
   </head>
-
   <body>
-    <div id="header">
-      <img
-        class="logo"
-        src="https://cdn.autodesk.io/logo/black/stacked.png"
-        alt="Autodesk Platform Services"
-      />
-      <span class="title">Hubs Browser</span>
-      <button id="login" style="visibility: hidden">Login</button>
-    </div>
-    <div id="sidebar">
-      <div id="tree"></div>
-    </div>
-    <div id="preview"></div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
-    <script src="https://unpkg.com/inspire-tree@4.3.1/dist/inspire-tree.js"></script>
-    <script src="https://unpkg.com/inspire-tree-dom@4.0.6/dist/inspire-tree-dom.min.js"></script>
-    <script src="/main.js" type="module"></script>
   </body>
 </html>

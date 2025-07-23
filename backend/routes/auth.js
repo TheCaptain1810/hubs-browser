@@ -1,10 +1,10 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   getAuthorizationUrl,
   authCallbackMiddleware,
   authRefreshMiddleware,
   getUserProfile,
-} = require("../services/aps.js");
+} from "../services/aps.js";
 
 let router = express.Router();
 
@@ -38,4 +38,4 @@ router.get(
   }
 );
 
-module.exports = router;
+export default router;
