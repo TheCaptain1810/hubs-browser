@@ -58,15 +58,12 @@ const Header = () => {
       </div>
       <button
         id="login"
+        name="login"
         onClick={handleLoginClick}
         className={`
           ${user !== null || loginText === "Login" ? "visible" : "invisible"}
-          ${
-            user
-              ? "bg-red-600 hover:bg-red-700"
-              : "bg-blue-600 hover:bg-blue-700"
-          }
-          text-white border-none px-5 py-2.5 rounded-md text-sm font-medium
+          bg-slate-100
+          text-black border-none px-5 py-2.5 rounded-md text-sm font-medium
           cursor-pointer transition-all duration-200 ease-in-out
           shadow-sm hover:shadow-md hover:-translate-y-0.5
         `}

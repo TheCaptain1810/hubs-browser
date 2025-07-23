@@ -34,7 +34,6 @@ const ViewerInitializer = () => {
   return (
     <div>
       <div id="preview" />
-      <div id="tree" />
     </div>
   );
 };
