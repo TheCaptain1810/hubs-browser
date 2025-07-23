@@ -1,7 +1,7 @@
 import express from "express";
 import session from "cookie-session";
 
-import { PORT, SERVER_SESSION_SECRET } from "./config";
+import { PORT, SERVER_SESSION_SECRET } from "./config.js";
 import authRoutes from "./routes/auth.js";
 import hubsRoutes from "./routes/hubs.js";
 

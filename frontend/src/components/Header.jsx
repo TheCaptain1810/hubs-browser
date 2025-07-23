@@ -1,139 +1,78 @@
-import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useState, useEffect } from "react";
 
 const Header = () => {
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const { logout } = useAuth();
+  const [user, setUser] = useState(null);
+  const [loginText, setLoginText] = useState("Login");
 
-  const toggleProfileMenu = () => {
-    setShowProfileMenu(!showProfileMenu);
-  };
-
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        logout();
-      } else {
-        console.error("Logout failed");
-        logout();
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const resp = await fetch("/api/auth/profile");
+        if (resp.ok) {
+          const userData = await resp.json();
+          setUser(userData);
+          setLoginText(`Logout (${userData.name})`);
+        } else {
+          setLoginText("Login");
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        setLoginText("Login");
       }
-    } catch (error) {
-      console.error("Error during logout:", error);
-      logout();
-    }
-  };
+    };
 
-  const handleOutsideClick = (e) => {
-    if (!e.target.closest(".profile-container")) {
-      setShowProfileMenu(false);
+    checkAuthStatus();
+  }, []);
+
+  const handleLoginClick = () => {
+    if (user) {
+      // Handle logout
+      const iframe = document.createElement("iframe");
+      iframe.style.visibility = "hidden";
+      iframe.src = "https://accounts.autodesk.com/Authentication/LogOut";
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+        window.location.replace("/api/auth/logout");
+        document.body.removeChild(iframe);
+      };
+    } else {
+      // Handle login
+      window.location.replace("/api/auth/login");
     }
   };
 
   return (
-    <div id="header" onClick={handleOutsideClick}>
-      <img
-        className="logo"
-        src="https://cdn.autodesk.io/logo/black/stacked.png"
-        alt="Autodesk Platform Services"
-      />
-      <span className="title">Simple Viewer</span>
-
-      {/* Profile Button */}
-      <div className="profile-container">
-        <button
-          onClick={toggleProfileMenu}
-          className="profile-button"
-          title="Profile Menu"
-        >
-          <svg
-            style={{ width: "1.25rem", height: "1.25rem", color: "#4b5563" }}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
-        </button>
-
-        {/* Dropdown Menu */}
-        {showProfileMenu && (
-          <div className="profile-menu">
-            <div
-              style={{
-                padding: "1rem 1rem 0.5rem",
-                borderBottom: "1px solid #f3f4f6",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: "0.875rem",
-                  fontWeight: "500",
-                  color: "#111827",
-                  margin: "0",
-                }}
-              >
-                APS User
-              </p>
-              <p
-                style={{
-                  fontSize: "0.75rem",
-                  color: "#6b7280",
-                  margin: "0.25rem 0 0",
-                }}
-              >
-                Connected to Autodesk Platform Services
-              </p>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              style={{
-                width: "100%",
-                textAlign: "left",
-                padding: "0.5rem 1rem",
-                fontSize: "0.875rem",
-                color: "#374151",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                transition: "background-color 0.2s",
-              }}
-            >
-              <svg
-                style={{
-                  width: "1rem",
-                  height: "1rem",
-                  marginRight: "0.5rem",
-                  color: "#6b7280",
-                }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-              Log Out
-            </button>
-          </div>
-        )}
+    <div
+      id="header"
+      className="flex justify-between items-center px-3 pb-3 bg-white shadow-sm"
+    >
+      <div className="flex items-center">
+        <img
+          className="logo h-8 mr-3"
+          src="https://cdn.autodesk.io/logo/black/stacked.png"
+          alt="Autodesk Platform Services"
+        />
+        <span className="title text-xl font-semibold text-gray-800">
+          Hubs Browser
+        </span>
       </div>
+      <button
+        id="login"
+        onClick={handleLoginClick}
+        className={`
+          ${user !== null || loginText === "Login" ? "visible" : "invisible"}
+          ${
+            user
+              ? "bg-red-600 hover:bg-red-700"
+              : "bg-blue-600 hover:bg-blue-700"
+          }
+          text-white border-none px-5 py-2.5 rounded-md text-sm font-medium
+          cursor-pointer transition-all duration-200 ease-in-out
+          shadow-sm hover:shadow-md hover:-translate-y-0.5
+        `}
+      >
+        {loginText}
+      </button>
     </div>
   );
 };
