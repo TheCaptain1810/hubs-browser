@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { initViewer, loadModel } from "../utils/viewer.js";
 import { initTree } from "../utils/sidebar.js";
 
 const ViewerInitializer = () => {
+  const previewRef = useRef(null);
+
   useEffect(() => {
     const initializeApp = async () => {
       try {
@@ -10,15 +12,12 @@ const ViewerInitializer = () => {
         if (resp.ok) {
           await resp.json();
 
-          // Initialize the viewer
-          const viewerInstance = await initViewer(
-            document.getElementById("preview")
-          );
-
-          // Initialize the tree with the loadModel callback
-          initTree("#tree", (id) =>
-            loadModel(viewerInstance, window.btoa(id).replace(/=/g, ""))
-          );
+          if (previewRef.current) {
+            const viewerInstance = await initViewer(previewRef.current);
+            initTree("#tree", (id) =>
+              loadModel(viewerInstance, window.btoa(id).replace(/=/g, ""))
+            );
+          }
         }
       } catch (err) {
         alert(
@@ -29,11 +28,11 @@ const ViewerInitializer = () => {
     };
 
     initializeApp();
-  }, []); // Empty dependency array to run once on mount
+  }, []);
 
   return (
     <div>
-      <div id="preview" />
+      <div ref={previewRef} id="preview" />
     </div>
   );
 };
